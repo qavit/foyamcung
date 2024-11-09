@@ -1,4 +1,7 @@
+// main.dart
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(HakkaLearningApp());
@@ -23,10 +26,37 @@ class SentenceArrangementGame extends StatefulWidget {
 }
 
 class _SentenceArrangementGameState extends State<SentenceArrangementGame> {
-  List<String> hakkaWords = ["客話", "係", "吾", "阿姆話"]; // 假設的初始斷詞
-  List<String> correctOrder = ["客話", "係", "吾", "阿姆話"]; // 正確答案
-  int health = 5; // 初始生命值
-  int experience = 0; // 初始經驗值
+  List<String> hakkaWords = [];
+  String chineseSentence = '';
+  List<String> correctOrder = [];
+  int health = 5;
+  int experience = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchSentenceData(); // 初始化時從API獲取句子資料
+  }
+
+  // 整合 API：取得句子資料
+  Future<void> fetchSentenceData() async {
+    try {
+      final response = await http.get(Uri.parse('http://127.0.0.1:8000/api/sentences/'));
+      if (response.statusCode == 200) {
+        final utf8Response = utf8.decode(response.bodyBytes);
+        var data = json.decode(utf8Response)[0]; // 使用 utf8 進行解碼
+        setState(() {
+          chineseSentence = data['chinese_sentence'];
+          hakkaWords = List<String>.from(data['hakka_words']);
+          correctOrder = List<String>.from(data['hakka_words']);
+        });
+      } else {
+        throw Exception('Failed to load sentences');
+      }
+    } catch (e) {
+      print("Error fetching sentences: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +80,7 @@ class _SentenceArrangementGameState extends State<SentenceArrangementGame> {
             SizedBox(height: 10),
             // 華語例句展示
             Text(
-              '華語例句: 今天要學習客語。',
+              '華語例句: $chineseSentence',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),
@@ -68,7 +98,7 @@ class _SentenceArrangementGameState extends State<SentenceArrangementGame> {
                             color: Colors.lightBlueAccent,
                             child: Text(
                               word,
-                              style: TextStyle(fontSize: 18),
+                              style: TextStyle(fontSize: 18, fontFamily: 'NotoSansCJK'), // 建議加上支援CJK的字體
                               textAlign: TextAlign.center,
                             ),
                           ),
@@ -102,9 +132,8 @@ class _SentenceArrangementGameState extends State<SentenceArrangementGame> {
   // 確認答案
   void _checkAnswer() {
     if (hakkaWords.join() == correctOrder.join()) {
-      // 排列正確
       setState(() {
-        experience += 10; // 增加經驗值
+        experience += 10;
       });
       if (experience >= 100) {
         _showMessage("恭喜過關！");
@@ -112,9 +141,8 @@ class _SentenceArrangementGameState extends State<SentenceArrangementGame> {
         _showMessage("正確！");
       }
     } else {
-      // 排列錯誤
       setState(() {
-        health -= 1; // 減少生命值
+        health -= 1;
       });
       if (health <= 0) {
         _showMessage("生命值耗盡，遊戲結束！");
