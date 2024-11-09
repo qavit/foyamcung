@@ -1,6 +1,8 @@
+// main.dart
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   runApp(HakkaLearningApp());
@@ -12,8 +14,33 @@ class HakkaLearningApp extends StatelessWidget {
     return MaterialApp(
       title: '句子排列遊戲',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        cardColor: Colors.lightBlueAccent.shade100, // 主題顏色
+        primarySwatch: Colors.green,
+        primaryColor: Colors.teal,
+        fontFamily: 'JFOpenHuninn',
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.green,
+        ).copyWith(
+          secondary: Colors.greenAccent,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.teal,
+            foregroundColor: Colors.white,
+          ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            foregroundColor: Colors.teal,
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.teal,
+          ),
+        ),
+        iconTheme: IconThemeData(
+          color: Colors.teal[700],
+        ),
       ),
       home: SentenceArrangementGame(),
     );
@@ -29,9 +56,10 @@ class SentenceArrangementGame extends StatefulWidget {
 class _SentenceArrangementGameState extends State<SentenceArrangementGame> {
   List<String> hakkaWords = [];
   List<String> correctOrder = [];
-  String chineseSentence = ""; // 華語例句
-  int health = 5; // 初始生命值
-  int experience = 0; // 初始經驗值
+  String chineseSentence = '';
+  int health = 5;
+  int experience = 0;
+  bool showInfoDialog = false;
 
   @override
   void initState() {
@@ -39,21 +67,24 @@ class _SentenceArrangementGameState extends State<SentenceArrangementGame> {
     fetchSentenceData();
   }
 
-  // 更新的 fetchSentenceData 函式
   Future<void> fetchSentenceData() async {
-    final response =
-        await http.get(Uri.parse('http://127.0.0.1:8000/api/sentences/'));
-    if (response.statusCode == 200) {
-      final utf8Response = utf8.decode(response.bodyBytes); // 解碼成 UTF-8
-      var data = json.decode(utf8Response)[0];
-
-      setState(() {
-        chineseSentence = data['chinese_sentence'];
-        hakkaWords = List<String>.from(data['hakka_words']);
-        correctOrder = List<String>.from(data['hakka_words']); // 正確順序
-      });
-    } else {
-      print("Error fetching sentences: ${response.statusCode}");
+    try {
+      final response =
+          await http.get(Uri.parse('http://127.0.0.1:8000/api/sentences/'));
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(utf8.decode(response.bodyBytes));
+        final randomSentence = data[Random().nextInt(data.length)];
+        setState(() {
+          chineseSentence = randomSentence['chinese_sentence'];
+          hakkaWords = List<String>.from(randomSentence['hakka_words']);
+          correctOrder = List<String>.from(hakkaWords);
+          hakkaWords.shuffle(); // 打亂順序
+        });
+      } else {
+        throw Exception('Failed to load sentences');
+      }
+    } catch (error) {
+      print('Error fetching sentences: $error');
     }
   }
 
@@ -61,83 +92,152 @@ class _SentenceArrangementGameState extends State<SentenceArrangementGame> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('句子排列遊戲'),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('句子排列遊戲'),
+            const SizedBox(width: 8),
+            IconButton(
+              icon: const Icon(Icons.info_outline),
+              onPressed: _toggleInfoDialog,
+            ),
+          ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // 彈跳窗格 - 顯示題目說明
+            if (showInfoDialog) _buildInfoDialog(),
             // 生命值和經驗值
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('❤️ 生命值: $health', style: TextStyle(fontSize: 18)),
-                Text('EXP: $experience', style: TextStyle(fontSize: 18)),
+                Text('❤️ 生命值: $health', style: const TextStyle(fontSize: 18)),
+                Text('EXP: $experience', style: const TextStyle(fontSize: 18)),
               ],
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 20),
             // 華語例句展示
-            Text(
-              '$chineseSentence',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 30),
-            // 客語字卡區域
-            // Text('拖曳字卡排列成正確的客語順序:', style: TextStyle(fontSize: 16)),
-            // SizedBox(height: 10),
-            Expanded(
-              child: Wrap(
-                spacing: 8.0, // 卡片之間的水平間距
-                runSpacing: 8.0, // 行之間的垂直間距
-                children: hakkaWords.map((word) {
-                  return DraggableCard(
-                    word: word,
-                    color: Theme.of(context).cardColor,
-                  );
-                }).toList(),
+            Center(
+              child: Text(
+                '華語例句: $chineseSentence',
+                style: const TextStyle(fontSize: 16),
               ),
             ),
-            SizedBox(height: 20),
-            // 確認答案按鈕
+            const SizedBox(height: 20),
+            // 客語字卡區域
+            Expanded(
+              child: Center(
+                child: Wrap(
+                  spacing: 8.0,
+                  runSpacing: 8.0,
+                  children: hakkaWords.asMap().entries.map((entry) {
+                    int index = entry.key;
+                    String word = entry.value;
+
+                    return DragTarget<String>(
+                      onAcceptWithDetails: (details) {
+                        setState(() {
+                          final fromIndex = hakkaWords.indexOf(details.data);
+                          if (fromIndex != index) {
+                            hakkaWords.removeAt(fromIndex);
+                            hakkaWords.insert(index, details.data);
+                          }
+                        });
+                      },
+                      builder: (context, candidateData, rejectedData) {
+                        return Draggable<String>(
+                          data: word,
+                          feedback: _buildWordCard(word),
+                          childWhenDragging: Opacity(
+                            opacity: 0.5,
+                            child: _buildWordCard(word),
+                          ),
+                          child: _buildWordCard(word),
+                        );
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+            const Spacer(),
             Center(
               child: ElevatedButton(
                 onPressed: _checkAnswer,
-                child: Text('確認答案'),
+                child: const Text('確認答案'),
               ),
             ),
+            const SizedBox(height: 40),
           ],
         ),
       ),
     );
   }
 
-  // 確認答案
-  void _checkAnswer() {
-    if (hakkaWords.join() == correctOrder.join()) {
-      // 排列正確
-      setState(() {
-        experience += 10; // 增加經驗值
-      });
-      if (experience >= 100) {
-        _showMessage("恭喜過關！");
-      } else {
-        _showMessage("正確！");
-      }
-    } else {
-      // 排列錯誤
-      setState(() {
-        health -= 1; // 減少生命值
-      });
-      if (health <= 0) {
-        _showMessage("生命值耗盡，遊戲結束！");
-      } else {
-        _showMessage("錯誤，請再試一次！");
-      }
-    }
+  Widget _buildWordCard(String word) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.teal[200],
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        word,
+        style: const TextStyle(fontSize: 18),
+      ),
+    );
   }
 
-  // 提示訊息顯示
+  // 彈跳窗格 - 顯示題目說明
+  Widget _buildInfoDialog() {
+    return AlertDialog(
+      backgroundColor: Colors.grey[100],
+      content: Text(
+        '題目說明：拖曳詞組排列成正確的客語順序',
+        style: TextStyle(color: Colors.grey[800]),
+      ),
+    );
+  }
+
+  void _toggleInfoDialog() {
+    setState(() {
+      showInfoDialog = !showInfoDialog;
+    });
+  }
+
+  void _checkAnswer() {
+  if (hakkaWords.join() == correctOrder.join()) {
+    setState(() {
+      experience += 10;
+    });
+    if (experience >= 100) {
+      _showMessage("恭喜過關！");
+    } else {
+      _showMessage("正確！");
+    }
+    _loadNewSentence(); // 正確時重新出題
+  } else {
+    setState(() {
+      health -= 1;
+    });
+    if (health <= 0) {
+      _showMessage("生命值耗盡，遊戲結束！");
+      health = 5; // 重新開始
+      experience = 0;
+    } else {
+      _showMessage("錯誤，正確答案為：${correctOrder.join('')}");
+    }
+  }
+}
+
+  void _loadNewSentence() {
+    fetchSentenceData(); // 隨機出新題目
+  }
+
   void _showMessage(String message) {
     showDialog(
       context: context,
@@ -149,41 +249,11 @@ class _SentenceArrangementGameState extends State<SentenceArrangementGame> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text("確定"),
+              child: const Text("確定"),
             ),
           ],
         );
       },
-    );
-  }
-}
-
-// 定義圓角的 DraggableCard 小部件
-class DraggableCard extends StatelessWidget {
-  final String word;
-  final Color color;
-
-  const DraggableCard({required this.word, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(10), // 圓角矩形
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black26,
-            offset: Offset(2, 2),
-            blurRadius: 5,
-          ),
-        ],
-      ),
-      child: Text(
-        word,
-        style: TextStyle(fontSize: 18),
-      ),
     );
   }
 }
