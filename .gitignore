@@ -1,0 +1,57 @@
+# 機密資料
+firebase/firebase-adminsdk.json
+firebase/firebase_options.dart
+
+# VS Code 設定檔
+.vscode/
+*.code-workspace
+
+# Flutter 產生的冗餘檔案
+frontend/.dart_tool/
+frontend/.flutter-plugins
+frontend/.flutter-plugins-dependencies
+frontend/.packages
+frontend/.idea
+frontend/build/
+frontend/ios/Flutter/Flutter.framework
+frontend/ios/Flutter/Flutter.podspec
+frontend/ios/Flutter/Generated.xcconfig
+frontend/ios/Flutter/App.framework
+frontend/ios/Flutter/engine/
+frontend/ios/Flutter/flutter_assets/
+frontend/ios/Flutter/Flutter.podspec
+frontend/ios/.symlinks/
+frontend/ios/Pods/
+frontend/pubspec.lock
+frontend/.metadata
+frontend/.flutter
+
+# Flutter iOS/Android 快取
+frontend/android/.gradle/
+frontend/android/app/build/
+frontend/ios/Pods/
+frontend/ios/Runner.xcworkspace/
+frontend/ios/Flutter/Flutter.framework/
+frontend/ios/Flutter/App.framework
+frontend/web/
+
+# Django 產生的冗餘檔案
+__pycache__/
+backend/__pycache__/
+backend/*.py[cod]
+backend/backend/settings.pyc
+backend/db.sqlite3
+backend/media/
+backend/staticfiles/
+backend/.pytest_cache/
+backend/.coverage
+backend/htmlcov/
+
+# Python 虛擬環境
+venv/
+backend/venv/
+
+# 系統文件
+.DS_Store
+Thumbs.db
+
