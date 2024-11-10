@@ -23,6 +23,16 @@ def test_get_sentences():
         print("GET /api/sentences/ - Failed")
         print("Status Code:", response.status_code)
 
+def test_get_words():
+    url = f"{BASE_URL}/words/"
+    response = requests.get(url)
+    if response.status_code == 200:
+        print("GET /api/words/ - Success")
+        print("Response:", response.json())
+    else:
+        print("GET /api/words/ - Failed")
+        print("Status Code:", response.status_code)
+
 if __name__ == "__main__":
     print("Testing API endpoints:")
     test_get_courses()
