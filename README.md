@@ -38,3 +38,7 @@
 
 #### Automatic Speech Recognition (ASR)
 
+## Acknowledgements
+
+- Video sample: [暗夜新聞-氣象氣象主播黃脩筑(四縣腔)-太平洋熱帶系統活躍 東北風迎風面雨稍增 【客家新聞20241111】](https://www.youtube.com/watch?v=kOkqJlJM0Sw) by  HakkaTV
+- Font: [Open Huninn Font](https://github.com/justfont/open-huninn-font) by JustFont
