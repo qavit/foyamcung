@@ -1,66 +1,20 @@
-// main.dart
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-void main() {
-  runApp(WordLearningApp());
-}
-
-class WordLearningApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: '單字選擇遊戲',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-        primaryColor: Colors.teal,
-        fontFamily: 'JFOpenHuninn',
-        colorScheme: ColorScheme.fromSwatch(
-          primarySwatch: Colors.green,
-        ).copyWith(
-          secondary: Colors.greenAccent,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.teal,
-            foregroundColor: Colors.white,
-          ),
-        ),
-        textButtonTheme: TextButtonThemeData(
-          style: TextButton.styleFrom(
-            foregroundColor: Colors.teal,
-          ),
-        ),
-        outlinedButtonTheme: OutlinedButtonThemeData(
-          style: OutlinedButton.styleFrom(
-            foregroundColor: Colors.teal,
-          ),
-        ),
-        iconTheme: IconThemeData(
-          color: Colors.teal[700],
-        ),
-      ),
-      home: WordMultipleChoiceGame(),
-    );
-  }
-}
-
 class WordMultipleChoiceGame extends StatefulWidget {
   @override
-  _WordMultipleChoiceGameState createState() =>
-      _WordMultipleChoiceGameState();
+  _WordMultipleChoiceGameState createState() => _WordMultipleChoiceGameState();
 }
 
 class _WordMultipleChoiceGameState extends State<WordMultipleChoiceGame> {
-  String quesiton = '';
+  String question = '';
   List<String> options = [];
   int health = 5;
   int experience = 0;
   bool showInfoDialog = false;
-  int correctAnswerIndex = 0; // 正確答案的索引
-  int? selectedAnswerIndex; // 使用者選擇的答案索引
+  int correctAnswerIndex = 0;
+  int? selectedAnswerIndex;
 
   @override
   void initState() {
@@ -70,12 +24,11 @@ class _WordMultipleChoiceGameState extends State<WordMultipleChoiceGame> {
 
   Future<void> fetchWordData() async {
     try {
-      final response =
-          await http.get(Uri.parse('http://127.0.0.1:8000/api/words/questionList'));
+      final response = await http.get(Uri.parse('http://127.0.0.1:8000/api/words/questionList'));
       if (response.statusCode == 200) {
         Map<String, dynamic> data = json.decode(utf8.decode(response.bodyBytes));
         setState(() {
-          quesiton = data['question'];
+          question = data['question'];
           options = List<String>.from(data['options']);
           correctAnswerIndex = data['correct_answer_index'];
         });
@@ -108,9 +61,7 @@ class _WordMultipleChoiceGameState extends State<WordMultipleChoiceGame> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // 彈跳窗格 - 顯示題目說明
             if (showInfoDialog) _buildInfoDialog(),
-            // 生命值和經驗值
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -119,17 +70,15 @@ class _WordMultipleChoiceGameState extends State<WordMultipleChoiceGame> {
               ],
             ),
             const SizedBox(height: 20),
-            // 客語單字展示
             Center(
               child: Text(
-                '客語單字: $quesiton',
+                '客語單字: $question',
                 style: const TextStyle(fontSize: 16),
               ),
             ),
             const SizedBox(height: 10),
-            // 客語字卡區域
             Expanded(
-                child: Column(
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: options.asMap().entries.map((entry) {
                   int index = entry.key;
@@ -142,19 +91,19 @@ class _WordMultipleChoiceGameState extends State<WordMultipleChoiceGame> {
                         setState(() {
                           selectedAnswerIndex = index;
                         });
-                        _checkAnswer(); // 選擇答案後立即檢查答案
+                        _checkAnswer();
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: selectedAnswerIndex == index
                             ? Colors.teal[200]
-                            : Colors.grey, // 選擇時顯示不同顏色
+                            : Colors.grey,
                       ),
                       child: Text(option),
                     ),
                   );
                 }).toList(),
-                ),
               ),
+            ),
             const Spacer(),
           ],
         ),
@@ -162,8 +111,6 @@ class _WordMultipleChoiceGameState extends State<WordMultipleChoiceGame> {
     );
   }
 
-
-  // 彈跳窗格 - 顯示題目說明
   Widget _buildInfoDialog() {
     return AlertDialog(
       backgroundColor: Colors.grey[100],
@@ -181,31 +128,31 @@ class _WordMultipleChoiceGameState extends State<WordMultipleChoiceGame> {
   }
 
   void _checkAnswer() {
-  if (selectedAnswerIndex == correctAnswerIndex) {
-    setState(() {
-      experience += 10;
-    });
-    if (experience >= 100) {
-      _showMessage("恭喜過關！");
+    if (selectedAnswerIndex == correctAnswerIndex) {
+      setState(() {
+        experience += 10;
+      });
+      if (experience >= 100) {
+        _showMessage("恭喜過關！");
+      } else {
+        _showMessage("正確！");
+      }
     } else {
-      _showMessage("正確！");
-    }
-  } else {
-    setState(() {
-      health -= 1;
-    });
-    if (health <= 0) {
-      _showMessage("生命值耗盡，遊戲結束！");
-      health = 5; // 重新開始
-      experience = 0;
-    } else {
-      _showMessage("錯誤，正確答案為：${options[correctAnswerIndex]}");
+      setState(() {
+        health -= 1;
+      });
+      if (health <= 0) {
+        _showMessage("生命值耗盡，遊戲結束！");
+        health = 5;
+        experience = 0;
+      } else {
+        _showMessage("錯誤，正確答案為：${options[correctAnswerIndex]}");
+      }
     }
   }
-}
 
   void _loadNewWord() {
-    fetchWordData(); // 隨機出新題目
+    fetchWordData();
   }
 
   void _showMessage(String message) {
@@ -218,8 +165,8 @@ class _WordMultipleChoiceGameState extends State<WordMultipleChoiceGame> {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                    selectedAnswerIndex = null;
-                    _loadNewWord(); // 按下確定再重新出題
+                selectedAnswerIndex = null;
+                _loadNewWord();
               },
               child: const Text("確定"),
             ),
@@ -228,4 +175,4 @@ class _WordMultipleChoiceGameState extends State<WordMultipleChoiceGame> {
       },
     );
   }
-}
+} 
