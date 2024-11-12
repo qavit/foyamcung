@@ -10,8 +10,31 @@
 
 ## Future work
 
-- Text-To-Speech (TTS)
-    - [`facebook/mms-tts-hak`](https://huggingface.co/facebook/mms-tts-hak) (Demo: [`ninumm/mms-tts-en`](https://huggingface.co/spaces/ninumm/mms-tts-en))
-    - [`formospeech/yourtts-htia-240704`](https://huggingface.co/formospeech/yourtts-htia-240704) (Demo: [`united-link/taiwanese-hakka-tts`](https://huggingface.co/spaces/united-link/taiwanese-hakka-tts))
-- Neural Machine Translation (NMT)
-- Automatic Speech Recognition (ASR)
+### More modules
+
+- Video module
+- Dictionary module
+- ~~News module~~
+- ~~Chatbot module~~
+
+
+### Integrate with AI models
+
+#### Text-To-Speech (TTS)
+
+| Model | Demo |
+| --- | --- |
+| [`facebook/mms-tts-hak`](https://huggingface.co/facebook/mms-tts-hak) | [`ninumm/mms-tts-en`](https://huggingface.co/spaces/ninumm/mms-tts-en) |
+| [`formospeech/yourtts-htia-240704`](https://huggingface.co/formospeech/yourtts-htia-240704) | [`united-link/taiwanese-hakka-tts`](https://huggingface.co/spaces/united-link/taiwanese-hakka-tts) |
+
+#### Neural Machine Translation (NMT)
+
+| Model | Demo |
+| --- | --- |
+| [`facebook/m2m100_418M`](https://huggingface.co/facebook/m2m100_418M)\* | [`qavit/MT_demo.m2m100_418M`](https://huggingface.co/spaces/qavit/MT_demo.m2m100_418M) |
+| [`facebook/nllb-200-distilled-600M`](https://huggingface.co/facebook/nllb-200-distilled-600M)\* | [`qavit/MT_demo.nllb-200`](https://huggingface.co/spaces/qavit/MT_demo.nllb-200) |
+
+\* Requires fine-tuning to translate Hakka
+
+#### Automatic Speech Recognition (ASR)
+
