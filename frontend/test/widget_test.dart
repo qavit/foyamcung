@@ -8,8 +8,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:frontend/main.dart';
-import 'package:frontend/sentence_structure.dart';
-import 'package:frontend/word_mc.dart';
+// import 'package:frontend/sentence_structure.dart';
+// import 'package:frontend/word_mc.dart';
 
 void main() {
   testWidgets('Hakka Learning App 基本導航測試', (WidgetTester tester) async {

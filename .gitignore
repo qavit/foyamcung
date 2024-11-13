@@ -37,6 +37,7 @@ frontend/web/
 
 # Django 產生的冗餘檔案
 __pycache__/
+ML/__pycache__/
 backend/__pycache__/
 backend/*.py[cod]
 backend/backend/settings.pyc
