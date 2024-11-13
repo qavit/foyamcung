@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:developer' as developer;
 
 class WordMultipleChoiceGame extends StatefulWidget {
+const WordMultipleChoiceGame({super.key}); 
+
   @override
-  _WordMultipleChoiceGameState createState() => _WordMultipleChoiceGameState();
+  WordMultipleChoiceGameState createState() => WordMultipleChoiceGameState();
 }
 
-class _WordMultipleChoiceGameState extends State<WordMultipleChoiceGame> {
+class WordMultipleChoiceGameState extends State<WordMultipleChoiceGame> {
   String question = '';
   List<String> options = [];
   int health = 5;
@@ -36,7 +39,7 @@ class _WordMultipleChoiceGameState extends State<WordMultipleChoiceGame> {
         throw Exception('Failed to load words');
       }
     } catch (error) {
-      print('Error fetching words: $error');
+      developer.log('Error fetching words: $error');
     }
   }
 

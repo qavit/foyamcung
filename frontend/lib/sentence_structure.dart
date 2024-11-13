@@ -5,11 +5,13 @@ import 'dart:math';
 import 'dart:developer' as developer;
 
 class SentenceStructureGame extends StatefulWidget {
+  const SentenceStructureGame({super.key}); 
+
   @override
-  _SentenceStructureGameState createState() => _SentenceStructureGameState();
+  SentenceStructureGameState createState() => SentenceStructureGameState();
 }
 
-class _SentenceStructureGameState extends State<SentenceStructureGame> {
+class SentenceStructureGameState extends State<SentenceStructureGame> {
   List<String> hakkaWords = [];
   List<String> correctOrder = [];
   String chineseSentence = '';
