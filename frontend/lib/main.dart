@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'theme.dart';
 import 'sentence_structure.dart';
 import 'word_MC.dart';
+import 'video_player.dart';
 
 void main() {
   runApp(HakkaLearningApp());
 }
 
 class HakkaLearningApp extends StatelessWidget {
+  const HakkaLearningApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -19,6 +22,8 @@ class HakkaLearningApp extends StatelessWidget {
 }
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -30,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final List<Widget> _pages = [
     SentenceStructureGame(),
     WordMultipleChoiceGame(),
+    VideoPlayerScreen(),
   ];
 
   @override
@@ -37,9 +43,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('客語學習模組'),
+        title: const Text('客語學習模組'),
         leading: IconButton(
-          icon: Icon(Icons.menu),
+          icon: const Icon(Icons.menu),
           onPressed: () {
             _scaffoldKey.currentState?.openDrawer();
           },
@@ -49,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            DrawerHeader(
+            const DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.teal,
               ),
@@ -62,8 +68,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.text_fields),
-              title: Text('句子排列遊戲'),
+              leading: const Icon(Icons.text_fields),
+              title: const Text('句子排列遊戲'),
               onTap: () {
                 setState(() {
                   _selectedIndex = 0;
@@ -72,13 +78,23 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.spellcheck),
-              title: Text('單字選擇遊戲'),
+              leading: const Icon(Icons.spellcheck),
+              title: const Text('單字選擇遊戲'),
               onTap: () {
                 setState(() {
                   _selectedIndex = 1;
                 });
                 Navigator.pop(context); // 關閉 Drawer
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.play_circle_outline),
+              title: const Text('影片學習'),
+              onTap: () {
+                setState(() {
+                  _selectedIndex = 2;
+                });
+                Navigator.pop(context);
               },
             ),
           ],

@@ -16,7 +16,7 @@ dependencies:
   http: ^1.2.2 
   # firebase_core:
   # firebase_auth:
-
+  youtube_player_flutter: ^9.1.1
   cupertino_icons: ^1.0.8 # iOS style icons
 
 dev_dependencies:
