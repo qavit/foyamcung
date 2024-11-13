@@ -5,7 +5,7 @@ import 'word_MC.dart';
 import 'video_player.dart';
 
 void main() {
-  runApp(HakkaLearningApp());
+  runApp(const HakkaLearningApp());
 }
 
 class HakkaLearningApp extends StatelessWidget {

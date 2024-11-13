@@ -5,6 +5,8 @@ import 'dart:math';
 import 'dart:developer' as developer;
 
 class SentenceStructureGame extends StatefulWidget {
+  const SentenceStructureGame({super.key});
+
   @override
   _SentenceStructureGameState createState() => _SentenceStructureGameState();
 }

@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class WordMultipleChoiceGame extends StatefulWidget {
+  const WordMultipleChoiceGame({super.key});
+
   @override
   _WordMultipleChoiceGameState createState() => _WordMultipleChoiceGameState();
 }
